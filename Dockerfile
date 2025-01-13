@@ -26,3 +26,4 @@ EXPOSE 80
 
 # Start nginx în modul de primire a cererilor HTTP
 CMD ["nginx", "-g", "daemon off;"]
+
