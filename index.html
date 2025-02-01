@@ -4,12 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebXR QR Scanner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <video id="qr-video" autoplay></video>
   <canvas id="webxr-canvas"></canvas>
-  <script src="qr-scanner.js"></script>
-  <script src="app.js"></script>
+  <script type = "module" src="qr-scanner.js"></script>
+  <script type = "module" src="app.js"></script>
+  <script src="jsQR-master\jsQR-master\docs\jsQR.js"></script>
+  <button id="start-xr">Start AR</button>
 </body>
 </html>
+
+
