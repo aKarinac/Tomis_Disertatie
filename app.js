@@ -5,8 +5,16 @@ let objectPlaced = false;
 
 async function startCamera() {
     const video = document.getElementById('qr-video');
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
+    try {
+        // Accesarea camerei dispozitivului
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        video.play(); // Pornește redarea fluxului video
+        console.log('Camera initialized successfully.');
+    } catch (error) {
+        console.error('Error accessing camera:', error);
+        alert(`Failed to access camera: ${error.message}`);
+    }
 }
 
 async function handleQRCode(video) {
