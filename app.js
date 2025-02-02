@@ -10,7 +10,10 @@ let renderer = null; // Adăugăm renderer-ul
 async function startCamera() {
     const video = document.getElementById('qr-video');
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        // Solicită camera din spate
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { exact: "environment" } } // Aceasta va selecta camera din spate
+        });
         video.srcObject = stream;
 
         // Așteaptă ca fluxul video să fie inițializat
@@ -25,6 +28,7 @@ async function startCamera() {
         console.error('Error accessing camera:', error);
     }
 }
+
 
 async function handleQRCode(video) {
     if (video.videoWidth === 0 || video.videoHeight === 0) {
