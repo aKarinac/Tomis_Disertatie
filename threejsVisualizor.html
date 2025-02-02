@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js GLTF Viewer</title>
+  <!-- Import Three.js -->
+  <script src="libs\three\three.min.js"></script>
+  <!-- Import GLTFLoader -->
+  <script src="libs\three\js\GLTFLoader.js"></script>
+  <script src="libs\three\js\OrbitControls.js"></script>
+</head>
+<body>
+  <div id="viewer"></div>
+  <script>
+    // Inițializează scena, camera și renderer-ul
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Adaugă lumină
+    const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+    scene.add(light);
+
+    // Încarcă modelul .gltf
+    const loader = new THREE.GLTFLoader();
+    loader.load('cube.gltf', (gltf) => {
+      scene.add(gltf.scene);
+      camera.position.set(0, 1, 10); // Poziționează camera pentru vizualizare
+      animate();
+    }, undefined, (error) => {
+      console.error('Eroare la încărcarea modelului:', error);
+    });
+
+     // Adaugă controale OrbitControls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; // Activează amortizarea
+    controls.dampingFactor = 0.05; // Amortizare mai lentă
+    controls.target.set(0, 0, 0); // Punctul central al modelului
+    controls.update();
+
+    // Funcția de animație
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update(); 
+      renderer.render(scene, camera);
+    }
+  </script>
+</body>
+</html>
