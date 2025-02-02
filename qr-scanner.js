@@ -1,8 +1,8 @@
-// qr-scanner.js
 export async function scanQRCode(videoElement) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
+    // Verifică dacă video-ul este disponibil
     if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
         console.error("Video element dimensions are zero. Unable to scan QR code.");
         return null;
