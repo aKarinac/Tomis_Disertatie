@@ -6,21 +6,30 @@ let model = null; // Variabila pentru a salva modelul 3D încărcat
 let scene = null; // Adăugăm scena
 let camera = null; // Adăugăm camera
 let renderer = null; // Adăugăm renderer-ul
+let currentCamera = 'environment'; // Începe cu camera din spate
 
+// Funcția pentru a începe camera
 async function startCamera() {
     const video = document.getElementById('qr-video');
     try {
-        // Solicită camera din spate
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { exact: "environment" } } // Aceasta va selecta camera din spate
-        });
-        video.srcObject = stream;
+        // Închide camera curentă dacă există
+        const stream = video.srcObject;
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop()); // Oprește toate track-urile video
+        }
 
-        // Așteaptă ca fluxul video să fie inițializat
+        // Începe camera în funcție de valoarea `currentCamera`
+        const newStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { exact: currentCamera } }
+        });
+
+        video.srcObject = newStream;
+
         return new Promise((resolve) => {
             video.onloadedmetadata = () => {
                 video.play();
-                console.log('Camera initialized successfully.');
+                console.log(`${currentCamera === 'environment' ? 'Back' : 'Front'} camera initialized successfully.`);
                 resolve();
             };
         });
@@ -129,6 +138,11 @@ document.getElementById('start-xr').addEventListener('click', async () => {
         console.error("AR not supported on this device/browser.");
         alert("AR is not supported on this device or browser.");
     }
+});
+
+document.getElementById('toggle-camera').addEventListener('click', () => {
+    currentCamera = (currentCamera === 'environment') ? 'user' : 'environment'; // Comută între camere
+    startCamera(); // Reinițializează camera
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
