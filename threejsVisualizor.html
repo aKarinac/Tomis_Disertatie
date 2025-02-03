@@ -9,6 +9,8 @@
   <!-- Import GLTFLoader -->
   <script src="libs\three\js\GLTFLoader.js"></script>
   <script src="libs\three\js\OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
+
 </head>
 <body>
   <div id="viewer"></div>
@@ -25,33 +27,14 @@
     scene.add(light);
 
     // Încarcă modelul .gltf
-    // const loader = new THREE.GLTFLoader();
-    // loader.load('cube.gltf', (gltf) => {
-    //   scene.add(gltf.scene);
-    //   camera.position.set(0, 1, 10); // Poziționează camera pentru vizualizare
-    //   animate();
-    // }, undefined, (error) => {
-    //   console.error('Eroare la încărcarea modelului:', error);
-    // });
-
-    // Înlocuiește întreaga secțiune `loader.load` cu acest cod:
-    const geometry = new THREE.BoxGeometry(); // Creează geometria cubului
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 }); // Material verde
-    const cube = new THREE.Mesh(geometry, material); // Creează cubul ca mesh
-    scene.add(cube); // Adaugă cubul în scenă
-
-    // Poziționează camera pentru a vedea cubul
-    camera.position.set(0, 1, 5);
-
-    // Pornește animația
-    function animate() {
-      requestAnimationFrame(animate);
-      cube.rotation.x += 0.01; // Animare rotație cub pe axa X
-      cube.rotation.y += 0.01; // Animare rotație cub pe axa Y
-      renderer.render(scene, camera);
-    }
-    animate();
-
+    const loader = new THREE.GLTFLoader();
+    loader.load('cube.gltf', (gltf) => {
+      scene.add(gltf.scene);
+      camera.position.set(0, 1, 10); // Poziționează camera pentru vizualizare
+      animate();
+    }, undefined, (error) => {
+      console.error('Eroare la încărcarea modelului:', error);
+    });
 
      // Adaugă controale OrbitControls
     const controls = new THREE.OrbitControls(camera, renderer.domElement);

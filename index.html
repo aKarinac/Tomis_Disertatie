@@ -8,15 +8,28 @@
    <script src="libs\three\three.min.js"></script>
    <!-- Import GLTFLoader -->
    <script src="libs\three\js\GLTFLoader.js"></script>
+   <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <a-scene embedded arjs>
+    <!-- Marker AR.js Personalizat -->
+    <a-marker type="pattern" url="pattern-marker.patt">
+      <!-- Modelul 3D (va fi plasat pe marker) -->
+      <a-entity gltf-model="cube.gltf" scale="0.5 0.5 0.5" position="0 0 0"></a-entity>
+    </a-marker>
+
+    <!-- Camera AR -->
+    <a-entity camera></a-entity>
+  </a-scene>
+
   <button id="toggle-camera">Switch Camera</button>
   <video id="qr-video" autoplay></video>
   <canvas id="webxr-canvas"></canvas>
   <script type = "module" src="qr-scanner.js"></script>
   <script type = "module" src="app.js"></script>
-  <!-- <script src="jsQR-master\jsQR-master\docs\jsQR.js"></script> -->
+  <script src="jsQR-master\jsQR-master\docs\jsQR.js"></script>
   <button id="start-xr">Start AR</button>
 
 </body>
