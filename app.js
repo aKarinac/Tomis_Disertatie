@@ -49,14 +49,17 @@ async function handleQRCode(video) {
     const qrData = await scanQRCode(video);
     if (qrData && !objectPlaced) {
         console.log("QR Code Detected:", qrData);
+
+        // Poziționează modelul pe coordonatele QR-ului
         objectPlaced = true; // Previne plasarea multiplă a obiectului
-        loadModel(); // Încarcă modelul 3D
+        loadModel(qrData.location); // Trimite locația QR-ului către funcția `loadModel`
     }
     requestAnimationFrame(() => handleQRCode(video));
 }
 
+
 // Funcția pentru a încărca fișierul .gltf
-function loadModel() {
+function loadModel(qrLocation) {
     if (!scene) {
         console.error("Scene is not initialized!");
         return;
@@ -67,15 +70,25 @@ function loadModel() {
     loader.load('cube.gltf', (gltf) => {
         model = gltf.scene; // Salvează scena încărcată
         model.scale.set(0.5, 0.5, 0.5); // Poți ajusta scala dacă vrei
-        model.position.set(0, 0, -5); // Poziționează modelul la o distanță în fața camerei
 
+        // Poziționează modelul pe coordonatele QR-ului
+        model.position.set(qrLocation.x, qrLocation.y, qrLocation.z);
+
+        const mappedX = qrLocation.x * someScalingFactor;
+        const mappedY = qrLocation.y * someScalingFactor;
+        const mappedZ = -5; // Poziționează în fața camerei
+        model.position.set(mappedX, mappedY, mappedZ);
+        
         // Adaugă modelul în scenă
         scene.add(model);
-        console.log('Model loaded successfully!');
+        console.log('Model loaded successfully and positioned on QR Code!');
     }, undefined, (error) => {
         console.error('Error loading model:', error);
     });
+    
+
 }
+
 
 async function placeObjectInXR(data) {
     const canvas = document.getElementById('webxr-canvas');
