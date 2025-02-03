@@ -1,27 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebXR QR Scanner</title>
-   <!-- Import Three.js -->
-   <script src="libs\three\three.min.js"></script>
-   <!-- Import GLTFLoader -->
-   <script src="libs\three\js\GLTFLoader.js"></script>
-   <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0, maximum-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r120/three.min.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ar.js/2.2.2/aframe-ar.min.js"></script>
+    <title>Marker Try</title>
+    <link rel="stylesheet" href="stylestracker.css">
 </head>
-<body>
-
-  <button id="toggle-camera">Switch Camera</button>
-  <video id="qr-video" autoplay></video>
-  <canvas id="webxr-canvas"></canvas>
-  <script type = "module" src="qr-scanner.js"></script>
-  <script type = "module" src="app.js"></script>
-  <script src="jsQR-master\jsQR-master\docs\jsQR.js"></script>
-  <button id="start-xr">Start AR</button>
-
+<body style="margin: 0; overflow: hidden;">
+    <button id="switchCameraButton">Switch Camera</button>
+    <script type = "text/javascript" src="app_2.js"></script>
 </body>
 </html>
-
-
