@@ -27,7 +27,7 @@ function switchCamera() {
     // Create a new AR Toolkit Source with the appropriate camera
     arToolkitSource = new ARjs.Source({
         sourceType: 'webcam',
-        camera: isFrontCamera ? 'user' : 'environment'  // 'user' is front camera, 'environment' is back camera
+        facingMode: isFrontCamera ? { exact: 'user' } : { exact: 'environment' } // 'user' is front camera, 'environment' is back camera
     });
 
     // Re-initialize the AR Toolkit Source
@@ -125,7 +125,7 @@ function setupSceneFromMap(mapData) {
 document.getElementById('switchCameraButton').addEventListener('click', switchCamera);
 
 let lastRenderTime = 0; // Variabilă pentru timpul ultimei randări
-const renderInterval = 2000; // Intervalul de randare în milisecunde (2 secunde)
+const renderInterval = 1000; // Intervalul de randare în milisecunde (2 secunde)
 let object = null; // Referință globală la obiectul încărcat
 
 // Funcție pentru a seta vizibilitatea tuturor obiectelor din scenă
