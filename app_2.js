@@ -24,6 +24,9 @@ let arToolkitSource = new ARjs.Source({
 function switchCamera() {
     isFrontCamera = !isFrontCamera;
 
+    if (arToolkitSource && arToolkitSource.domElement) {
+        arToolkitSource.domElement.srcObject?.getTracks().forEach(track => track.stop());
+    }
     // Create a new AR Toolkit Source with the appropriate camera
     arToolkitSource = new ARjs.Source({
         sourceType: 'webcam',
