@@ -1,0 +1,40 @@
+{
+    "name": "map",
+    "tooltip": {"text": "...", "color": "..."},
+    "titleEn": "...",
+    "titleRo": "...",
+    "descriptionEn": "...",
+    "descriptionRo": "...",
+    "markerScale": 10,
+    "models": [
+      {
+        "name": "cub_collision.glb",
+        "loader": "gltf",
+        "scale": 0.01
+      }
+    ],
+    "directionalLight": {
+      "enabled": true,
+      "pos": [300, 200, 100],
+      "color": "#ffffff"
+    },
+    "fog": {
+      "enabled": true,
+      "color": "#69afff",
+      "near": 0,
+      "far": 1500
+    },
+    "ambientLight": {
+      "intensity": 2,
+      "color": "#ffffff"
+    },
+    "bloom": true,
+    "keyframes":
+    [
+          {"pos":[206.37203246749965,30.76001301931674,88.99330787180239],
+          "rotation":[-0.42522775297292575,0.7620732307177608,0.302921503589877,"XYZ"],"fov":57,"zoom":1},
+          {"pos":[-50.63453754307284,100.61225214390277,200.9026982083157],
+          "rotation":[-0.7670773498741756,-0.7510939415340724,-0.6112148841155157,"XYZ"],"fov":28,"zoom":1}
+    ],
+    "durations":[30000,30000,30000,30000]
+  }
