@@ -1,5 +1,7 @@
 let isArToolkitReady = false;
 let isFrontCamera = true;  // Initially using the front camera
+let currentModelIndex = 0; // Indexul modelului curent
+let models = []; // Modelele încărcate din map-scene.json
 
 const scene = new THREE.Scene();
 const camera = new THREE.Camera();
@@ -30,7 +32,7 @@ function switchCamera() {
     // Create a new AR Toolkit Source with the appropriate camera
     arToolkitSource = new ARjs.Source({
         sourceType: 'webcam',
-        facingMode: isFrontCamera ? { exact: 'user' } : { exact: 'environment' } // 'user' is front camera, 'environment' is back camera
+        facingMode: isFrontCamera ? { exact: 'user' } : { exact: 'environment' }
     });
 
     // Re-initialize the AR Toolkit Source
@@ -43,21 +45,12 @@ function switchCamera() {
     });
 
     console.log(isFrontCamera ? "Switched to Front Camera" : "Switched to Back Camera");
-
-    // Găsește canvas-ul utilizat de AR.js
-    const arCanvas = document.querySelector('canvas');
-    if (arCanvas) {
-        arCanvas.width = arCanvas.width; // Resetează canvas-ul
-        arCanvas.getContext('2d', { willReadFrequently: true });
-        console.log("Setat willReadFrequently pe canvas-ul AR.js.");
-    }
-
 }
 
 // Initialize AR Toolkit Context
 var arToolkitContext = new ARjs.Context({
     cameraParametersUrl: 'camera_para.dat',
-    detectionMode: 'mono',  // Using 'mono' for simpler detection
+    detectionMode: 'mono',
 });
 
 arToolkitContext.init(function () {
@@ -73,20 +66,11 @@ var arMarkerControls = new ARjs.MarkerControls(arToolkitContext, camera, {
 
 scene.visible = false;
 
-// const geometry = new THREE.BoxGeometry(1, 1, 1);
-// const material = new THREE.MeshNormalMaterial({
-//     transparent: true,
-//     opacity: 0.5,
-//     side: THREE.DoubleSide
-// });
-// const cube = new THREE.Mesh(geometry, material);
-// cube.position.y = geometry.parameters.height / 2;
-// scene.add(cube);
-
 // Load map-scene.json and create objects
 fetch('map-scene.json')
     .then(response => response.json())
     .then(data => {
+        models = data.models;
         setupSceneFromMap(data);
     })
     .catch(err => console.error("Error loading map-scene.json:", err));
@@ -113,13 +97,26 @@ function setupSceneFromMap(mapData) {
     // Load models
     const loader = new THREE.GLTFLoader();
 
-    mapData.models.forEach(model => {
-        loader.load(model.name, gltf => {
+    mapData.models.forEach((modelData, index) => {
+        loader.load(modelData.name, (gltf) => {
             const object = gltf.scene;
-            object.scale.set(model.scale, model.scale, model.scale);
-            scene.add(object);
-        }, undefined, error => {
-            console.error(`Error loading model ${model.name}:`, error);
+            object.scale.set(modelData.scale, modelData.scale, modelData.scale);
+            object.visible = false; // Ascundem toate modelele inițial
+            object.userData.originalName = modelData.name;   
+            // scene.add(object); // Adăugăm modelul în scenă
+            models[index] = object; // Stocăm obiectul în array-ul models, înlocuind obiectele brute
+
+            console.log(`Preloaded model: ${modelData.name}`);
+            
+            if (index === 0) {
+                scene.add(object);
+                object.visible = true; // Facem modelul vizibil
+                console.log(`Added model to scene: ${modelData.name}`);
+            }
+    
+
+        }, undefined, (error) => {
+            console.error(`Error loading model ${modelData.name}:`, error);
         });
     });
 }
@@ -133,9 +130,9 @@ let object = null; // Referință globală la obiectul încărcat
 
 // Funcție pentru a seta vizibilitatea tuturor obiectelor din scenă
 function setSceneVisibility(isVisible) {
-    scene.visible = isVisible; // Ascunde sau arată scena
+    scene.visible = isVisible;
     scene.children.forEach((child) => {
-        child.visible = isVisible; // Ascunde sau arată fiecare copil din scenă
+        child.visible = isVisible;
     });
 }
 
@@ -144,48 +141,98 @@ function animate() {
     requestAnimationFrame(animate);
 
     if (isArToolkitReady) {
-        // Actualizează contextul ARToolKit
         arToolkitContext.update(arToolkitSource.domElement);
     }
 
-    const markerVisible = arMarkerControls.object3d.visible; // Verifică vizibilitatea markerului
-    const currentTime = performance.now(); // Obține timpul curent
+    const markerVisible = arMarkerControls.object3d.visible;
+    const currentTime = performance.now();
 
-    // Verifică dacă markerul este vizibil
     if (camera.visible) {
-        // Dacă markerul este detectat și au trecut 2 secunde
         if (!scene.visible) {
-            setSceneVisibility(true); // Setează scena vizibilă
+            setSceneVisibility(true);
         }
 
-        // Adăugăm obiectul doar dacă markerul este vizibil și obiectul nu este deja în scenă
         if (markerVisible && object && !scene.contains(object)) {
             scene.add(object);
             console.log('Obiectul a fost adăugat în scenă!');
         }
 
-        // Dacă markerul este vizibil și a trecut intervalul de timp, renderizează scena
         if (currentTime - lastRenderTime >= renderInterval) {
             renderer.render(scene, camera);
             lastRenderTime = currentTime;
         }
 
     } else {
-        // Dacă markerul nu mai este vizibil
         if (scene.visible) {
-            setSceneVisibility(false); // Ascunde scena și obiectele din scenă
+            setSceneVisibility(false);
         }
 
-        // Elimină obiectul dacă markerul nu este vizibil
         if (!markerVisible && object && scene.contains(object)) {
             scene.remove(object);
             console.log('Obiectul a fost șters din scenă deoarece markerul nu este vizibil.');
         }
 
-        // Renderizează scena imediat ce markerul dispare, chiar dacă nu au trecut cele 2 secunde
         renderer.render(scene, camera);
+    }
+}
+animate();
+
+// Buton pentru schimbarea modelului
+const changeModelButton = document.getElementById('changeModelButton');
+
+changeModelButton.addEventListener('click', () => {
+    console.log('Change model button clicked!');
+    console.log('Models loaded:', models);
+    changeModel();
+    
+});
+
+function changeModel() {
+    // Ascunde modelul curent
+    if (models[currentModelIndex]) {
+        models[currentModelIndex].visible = false;
+        console.log(`Hiding model: ${models[currentModelIndex].userData.originalName}`);
+        scene.remove(models[currentModelIndex]); // Eliminăm modelul din scenă
+    }
+
+    // Actualizează indexul modelului curent
+    currentModelIndex = (currentModelIndex + 1) % models.length;
+
+    // Arată noul model
+    if (models[currentModelIndex]) {
+        scene.add(models[currentModelIndex]); // Adăugăm modelul în scenă
+        models[currentModelIndex].visible = true;
+        console.log(`Showing model: ${models[currentModelIndex].userData.originalName}`);
     }
 }
 
 
-animate();
+
+function animateOpacity(target, startOpacity, endOpacity, onComplete) {
+    const duration = 1000;
+    let startTime = null;
+
+    function animateSwitch(time) {
+        if (!startTime) startTime = time;
+        const elapsedTime = time - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+        const currentOpacity = startOpacity + (endOpacity - startOpacity) * progress;
+
+        target.traverse((child) => {
+            if (child.isMesh) {
+                if (!child.material.transparent) {
+                    child.material.transparent = true;
+                }
+                child.material.opacity = currentOpacity;
+            }
+        });
+
+        if (progress < 1) {
+            requestAnimationFrame(animateSwitch);
+        } else if (onComplete) {
+            onComplete();
+        }
+    }
+
+    requestAnimationFrame(animateSwitch);
+}
