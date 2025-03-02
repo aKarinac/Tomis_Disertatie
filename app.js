@@ -1,10 +1,10 @@
-import * as THREE from '../libs/three/three.module.js';
+import * as THREE from './libs/three/three.module.js';
 import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.154.0/examples/jsm/webxr/VRButton.js';
-import { XRControllerModelFactory } from '../libs/three/jsm/XRControllerModelFactory.js';
+import { XRControllerModelFactory } from './libs/three/jsm/XRControllerModelFactory.js';
 import { Stats } from '../libs/stats.module.js';
 import { OrbitControls } from '../libs/three/jsm/OrbitControls.js';
 import { CannonHelper } from '../libs/CannonHelper.js';
-import { GLTFLoader } from '../libs/three/jsm/GLTFLoader.js';
+import { GLTFLoader } from './libs/three/jsm/GLTFLoader.js';
 // import { EffectComposer } from '../libs/three/jsm/EffectComposer.js';
 // import { RenderPass } from '../libs/three/jsm/RenderPass.js';
 // import { OutlinePass} from '../libs/three/jsm/OutlinePass.js';
