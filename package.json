@@ -15,7 +15,7 @@
 
   "author": "Ivanof Alexia & Copaceanu Karina",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "indexAR.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
