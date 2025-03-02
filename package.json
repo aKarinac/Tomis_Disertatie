@@ -1,6 +1,7 @@
 {
   "name": "tomis_disertatie",
   "version": "1.0.0",
+
   "description": "disertatie VR-AR",
   "homepage": "https://github.com/aKarinac/Tomis_Disertatie#readme",
   "bugs": {
@@ -11,7 +12,9 @@
     "url": "git+https://github.com/aKarinac/Tomis_Disertatie.git"
   },
   "license": "ISC",
+
   "author": "Ivanof Alexia & Copaceanu Karina",
+
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
@@ -24,5 +27,7 @@
   },
   "dependencies": {
     "qrcode": "^1.5.4"
+
+
   }
 }
