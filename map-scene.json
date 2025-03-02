@@ -14,7 +14,7 @@
     },
 
     {
-      "name": "BazilicaCrypta.glb",
+      "name": "untitled.glb",
       "loader": "gltf",
       "scale": 0.1,
       "visible":false
