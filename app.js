@@ -10,6 +10,8 @@ import { GLTFLoader } from '../libs/three/jsm/GLTFLoader.js';
 // import { OutlinePass} from '../libs/three/jsm/OutlinePass.js';
 // import { FXAAShader} from '../libs/three/jsm/FXAAShader.js';
 // import { ShaderPass } from '../libs/three/jsm/ShaderPass.js';
+import { createBazilicaInteriorScene } from './bazilica_Interior.js';
+
 
 
 const scene = new THREE.Scene();
@@ -18,7 +20,26 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.xr.enabled = true;
 document.body.appendChild(renderer.domElement);
-document.body.appendChild(VRButton.createButton(renderer));
+
+// Adaugă loguri pentru a verifica dacă sesiunea VR începe și se termină
+renderer.xr.addEventListener('sessionstart', () => {
+  console.log('Sesiunea VR a început');
+});
+
+renderer.xr.addEventListener('sessionend', () => {
+  console.log('Sesiunea VR s-a încheiat');
+});
+
+// Creează butonul pentru a intra în VR
+const vrButton = VRButton.createButton(renderer);
+
+// Setează stiluri CSS pentru a centra butonul
+vrButton.style.position = 'absolute';
+vrButton.style.top = '50%';
+vrButton.style.left = '50%';
+vrButton.style.transform = 'translate(-50%, -50%)'; // Centrăm butonul în mijlocul ferestrei
+
+document.body.appendChild(vrButton);
 
 
 // Lighting
@@ -96,9 +117,9 @@ scene.add(controller);
 // scene.add(controller2);
 
 const controllerModelFactory = new XRControllerModelFactory();
-const controllerGrip1 = renderer.xr.getControllerGrip(0);
-controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
-scene.add(controllerGrip1);
+const controllerGrip = renderer.xr.getControllerGrip(0);
+controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+scene.add(controllerGrip);
 
 
 // Raycaster for interaction
@@ -174,7 +195,6 @@ function handleController(controller, raycaster, laser) {
   laser.geometry.setFromPoints([new THREE.Vector3(0, 0, 0), raycaster.ray.direction.clone().multiplyScalar(5)]);
   laser.position.setFromMatrixPosition(controller.matrixWorld);
 
-
   const intersects = raycaster.intersectObjects([model, criptamodel], true);
 
 // Dacă există intersecții
@@ -218,23 +238,42 @@ function handleController(controller, raycaster, laser) {
   }
 }
 
+let activeScene = { scene, camera }; // Scena principală
+
 // Add event listeners for select start and end
+// controller.addEventListener('selectstart', () => {
+//   if (previousIntersectedObject) {
+//     // Dacă există un model intersectat, salvează-l ca fiind selectat
+//     if (!selectedModel) {
+
+//       selectedModel = previousIntersectedObject;  // Setează modelul ca fiind selectat
+//       addOutlineToModel(selectedModel); // Adaugă evidențiere pentru selecție
+
+//       console.log(`Model selectat: ${selectedModel.name || 'Unnamed Model'}`);
+//     }
+//   }
+// });
+
+let isInInteriorScene = false; 
+
 controller.addEventListener('selectstart', () => {
+  if (isInInteriorScene) {
+    console.log('Deja în scena Bazilica Interior. Teleportarea este dezactivată.');
+    return; // Ieșim dacă suntem deja în scena de interior
+  }
   if (previousIntersectedObject) {
-    // Dacă există un model intersectat, salvează-l ca fiind selectat
-    if (!selectedModel) {
-      // Dacă există un model selectat, elimină evidențierea
-      if (selectedModel) {
-        removeOutline(selectedModel);
-      }
+    if (previousIntersectedObject.name === 'BazilicaCrypta') {
+      const { scene: newScene, camera: newCamera} = createBazilicaInteriorScene(renderer, controller, laser, controllerGrip);
 
-      selectedModel = previousIntersectedObject;  // Setează modelul ca fiind selectat
-      addOutlineToModel(selectedModel); // Adaugă evidențiere pentru selecție
+      // Comută scena activă
+      activeScene = { scene: newScene, camera: newCamera };
+      isInInteriorScene = true; 
 
-      console.log(`Model selectat: ${selectedModel.name || 'Unnamed Model'}`);
+      console.log('Teleportat la scena interiorului Bazilicii');
     }
   }
 });
+
 
 controller.addEventListener('selectend', () => {
   if (selectedModel) {
@@ -248,9 +287,8 @@ controller.addEventListener('selectend', () => {
 
 // Funcția de animație
 renderer.setAnimationLoop(() => {
-  // Apelează funcția handleController pentru a actualiza intersecțiile
   handleController(controller, raycaster, laser);
-  renderer.render(scene, camera);  // Randează scena
+  renderer.render(activeScene.scene, activeScene.camera);  // Randează scena
   // composer.render();
 });
 
@@ -261,3 +299,4 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
