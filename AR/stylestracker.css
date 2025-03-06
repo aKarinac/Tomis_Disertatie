@@ -1,0 +1,23 @@
+#switchCameraButton {
+    position: relative;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+#changeModelButton {
+    position: relative;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
